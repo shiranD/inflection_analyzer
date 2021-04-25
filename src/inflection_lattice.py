@@ -29,7 +29,7 @@ def create_priors(priors, isym, osym, code):
     f.add_arc(new, fst.Arc(code[sig], code[sig], fst.Weight(f.weight_type(), 1.0), new))
     return f,new
 
-def create_lattice(dev_fname, isyms_fname, constraints, lattice_output):
+def create_lattice(dev_fname, isyms_fname, constraints, lattice_output, refiner_fname):
     """
     Make a lattice that maps
     lemmas and constraints (or priors) to 
@@ -81,5 +81,21 @@ def create_lattice(dev_fname, isyms_fname, constraints, lattice_output):
     # save lattice
     f_big.write(lattice_output)
 
+    # build refiner
+    refiner = fst.Fst()
+    refiner.set_input_symbols(input_syms)
+    refiner.set_output_symbols(input_syms)
+    s0 = refiner.add_state()
+    s1 = refiner.add_state()
+    for c, ltr in code.items:
+        if ltr is not 0:
+            refiner.add_arc(s0, fst.Arc(code[c], code["<epsilon>"], fst.Weight(refiner.weight_type(), 1.0), s0))
+        refiner.add_arc(s0, fst.Arc(code[c], code[c], fst.Weight(refiner.weight_type(), 1.0), s1))
+    refiner.set_start(s0)
+    refiner.set_final(s1)
+    refiner.write(refiner_fname)
+
+
+
 if __name__ == "__main__":
-    create_lattice(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
+    create_lattice(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
