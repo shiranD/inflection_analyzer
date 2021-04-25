@@ -82,4 +82,4 @@ def create_lattice(dev_fname, isyms_fname, constraints, lattice_output):
     f_big.write(lattice_output)
 
 if __name__ == "__main__":
-    create_lattices(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
+    create_lattice(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
