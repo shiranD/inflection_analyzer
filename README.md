@@ -1,1 +1,1 @@
-# inflection_predictor
+# Inflection Analyzer
