@@ -15,8 +15,8 @@ python src/create_syms.py $dev_fname $letter_fname $isyms
 
 
 # create inflection convertion lattice
-python src/inflection_lattice.py $dev_fname $isyms $lattice
+python src/inflection_lattice.py $dev_fname $isyms $constraint $lattice
 
 # query the lattice
-python src/query.py $query_file $lattice $outcome
+python src/query.py $lattice $refiner $isyms $query $outcome
 
