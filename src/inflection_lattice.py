@@ -68,7 +68,10 @@ def build_lm(dev_fname, isyms_fname, constraints, lattice_output, refiner_fname)
                 old = new
             new = f.add_state()
             # the residual of the lemma is mapped to the inflection residual (indirectly)
-            f.add_arc(old, fst.Arc(code[inflection[idx:]], code[s_fin], fst.Weight(f.weight_type(), 1.0), new))
+            sym = lemma[idx:]+"_"+inflection[idx:]
+            print(lemma, inflection, sym)
+            f.add_arc(old, fst.Arc(code[sym], code[s_fin], fst.Weight(f.weight_type(), 1.0), new))
+            #f.add_arc(old, fst.Arc(code[inflection[idx:]], code[s_fin], fst.Weight(f.weight_type(), 1.0), new))
             #f.add_arc(old, fst.Arc(code[s_fin], code[inflection[idx:]], fst.Weight(f.weight_type(), 1.0), new))
             f.set_final(new)
             f_big.union(f)

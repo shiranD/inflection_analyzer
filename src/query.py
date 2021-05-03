@@ -29,7 +29,7 @@ class analyzer:
         f.set_final(old)
         return f
 
-    def generate_inflections(self,q):
+    def generate_inflections(self,q, lemma):
         
         paths = fst.compose(q, self.lattice)
         two_state = fst.compose(paths, self.refiner)
@@ -48,7 +48,14 @@ class analyzer:
             labels.append(label)
         sum_value = sum(dist)
         norm_dist = [prob/sum_value for prob in dist]
-        return str(sorted(zip(labels, norm_dist), key=lambda x:x[1]))
+        relabels = []
+        for label in labels:
+            delete, insert = label.split("_")
+            l = len(delete)
+            label = lemma[:-l]+insert
+            #print(lemma, delete, insert, label)
+            relabels.append(label)
+        return str(sorted(zip(relabels, norm_dist), key=lambda x:x[1]))
 
 if __name__ == "__main__":
     analyser = analyzer(sys.argv[1], sys.argv[2], sys.argv[3])
@@ -59,6 +66,6 @@ if __name__ == "__main__":
         line = line.strip()
         cns, lemma = line.split("\t")
         query = analyser.make_query(cns,lemma)
-        inflections = analyser.generate_inflections(query)
+        inflections = analyser.generate_inflections(query, lemma)
         outf.write(cns+" "+lemma+" "+inflections+"\n")
     outf.close()

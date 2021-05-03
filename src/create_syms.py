@@ -12,10 +12,11 @@ def create_symbol_sets(dev_fname, letters_fname, isyms_fname):
     symbol_dict['<sigma>']=1
     symbol_dict['</s>']=2
     
-    i = 2
-    for i, k in enumerate(open(letters_fname,"r").readlines()):
-        symbol_dict[k]=i+1
-    
+    i = 3
+    for m, k in enumerate(open(letters_fname,"r").readlines()):
+        k = k.strip()
+        symbol_dict[k]=i+m
+
     # add prior condition
     symbol_dict['V']=40
     symbol_dict['FUT']=41
@@ -25,15 +26,19 @@ def create_symbol_sets(dev_fname, letters_fname, isyms_fname):
     # add all possible inflections (inflection is considered here as the letter sequence that diverges from the lemma)
     i=100
     for line in open(dev_fname,'r').readlines(): # all possilbe inflections are added, regardless of the prior (applying the prior an make for a more effecifent computation)
-        constraints, lemma, inflection = line.split()
+        line = line.strip()
+        constraints, lemma, inflection = line.split()[-3:]
+
         # comparing strings
         idx = 0
         for j, (lm, flc) in enumerate(zip(lemma, inflection)):
             if lm !=flc:
                 idx = j
                 break
-        if inflection[idx:] not in symbol_dict:
-            symbol_dict[inflection[idx:]]= i
+        sym = lemma[idx:]+"_"+inflection[idx:]
+        if sym not in symbol_dict:
+            symbol_dict[sym]= i
+            #symbol_dict[inflection[idx:]]= i
             i+=1
     
     # create isyms file
