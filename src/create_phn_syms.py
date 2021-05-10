@@ -29,8 +29,10 @@ def create_symbol_sets(dev_fname, letters_fname, isyms_fname):
     symbol_dict['SG']=88
     symbol_dict['PL']=89
     symbol_dict['SBJV']=90
+    symbol_dict['IMP']=91
+    symbol_dict['NFIN']=92
+    symbol_dict['V.PTCP']=93
 
-    
     # add all possible inflections (inflection is considered here as the letter sequence that diverges from the lemma)
     i=100
     for line in open(dev_fname,'r').readlines(): # all possilbe inflections are added, regardless of the prior (applying the prior an make for a more effecifent computation)

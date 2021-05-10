@@ -9,7 +9,7 @@ def create_priors(priors, isym, osym, code):
     priors = priors.split(";")
 
     # init a trasducer
-    f = fst.Fst()
+    f = fst.Fst("log")
     f.set_input_symbols(isym)
     f.set_output_symbols(osym)
     s0 = f.add_state()
@@ -46,7 +46,7 @@ def build_lm(dev_fname, isyms_fname, constraints, lattice_output, refiner_fname)
         code[c]=ltr
 
     # init the lattice
-    f_big = fst.Fst()
+    f_big = fst.Fst("log")
     f_big.set_input_symbols(input_syms)
     f_big.set_output_symbols(input_syms)
 
@@ -75,7 +75,7 @@ def build_lm(dev_fname, isyms_fname, constraints, lattice_output, refiner_fname)
             new = f.add_state()
             # the residual of the lemma is mapped to the inflection residual (indirectly)
             sym = "".join(lemma[idx:])+"_"+"".join(inflection[idx:])
-            f.add_arc(old, fst.Arc(code[sym], code[s_fin], fst.Weight(f.weight_type(), 1.0), new))
+            f.add_arc(old, fst.Arc(code[sym], code[s_fin], fst.Weight(f.weight_type(),1.0), new))
             #f.add_arc(old, fst.Arc(code[inflection[idx:]], code[s_fin], fst.Weight(f.weight_type(), 1.0), new))
             #f.add_arc(old, fst.Arc(code[s_fin], code[inflection[idx:]], fst.Weight(f.weight_type(), 1.0), new))
             f.set_final(new)
@@ -105,7 +105,7 @@ def build_refiner(isyms_fname, refiner_fname):
         code[c]=ltr
 
     # build refiner
-    refiner = fst.Fst()
+    refiner = fst.Fst("log")
     refiner.set_input_symbols(input_syms)
     refiner.set_output_symbols(input_syms)
     s0 = refiner.add_state()

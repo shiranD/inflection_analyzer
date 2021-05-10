@@ -1,5 +1,6 @@
 import openfst_python as fst
 import sys
+import math
 
 class analyzer:
     def __init__(self, lattice, refiner, isyms_fname):
@@ -15,7 +16,7 @@ class analyzer:
 
         cns = cns.split(";")
         q = cns + ["<sigma>"] + lemma + ["</s>"]
-        f = fst.Fst()
+        f = fst.Fst("log")
         f.set_input_symbols(self.input_syms)
         f.set_output_symbols(self.input_syms)
         s0 = f.add_state()
@@ -23,7 +24,7 @@ class analyzer:
         old = s0
         for j in range(len(q)):
             new = f.add_state()
-            f.add_arc(old, fst.Arc(self.code[q[j]], self.code[q[j]], fst.Weight(f.weight_type(), 1.0), new))
+            f.add_arc(old, fst.Arc(self.code[q[j]], self.code[q[j]], fst.Weight(f.weight_type(), 2.0), new))
             old = new
         f.set_final(old)
         return f
@@ -43,7 +44,7 @@ class analyzer:
         for arc in output.arcs(state):
             label = self.input_syms.find(arc.ilabel)
             pr = float(arc.weight)
-            dist.append(pr)
+            dist.append(math.e**(-pr))
             labels.append(label)
         sum_value = sum(dist)
         norm_dist = [prob/sum_value for prob in dist]
@@ -53,7 +54,7 @@ class analyzer:
             l = len(delete)
             label = "".join(lemma[:-l])+insert
             relabels.append(label)
-        return str(sorted(zip(relabels, norm_dist), key=lambda x:x[1]))
+        return str(sorted(zip(relabels, norm_dist), key=lambda x:x[1], reverse=True))
 
 if __name__ == "__main__":
     analyser = analyzer(sys.argv[1], sys.argv[2], sys.argv[3])
