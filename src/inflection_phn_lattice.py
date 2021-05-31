@@ -29,7 +29,7 @@ def create_priors(priors, isym, osym, code):
     f.add_arc(new, fst.Arc(code[sig], code[sig], fst.Weight(f.weight_type(), 1.0), new))
     return f,new
 
-def build_lm(dev_fname, isyms_fname, constraints, lattice_output, refiner_fname):
+def build_lm(dev_fname, isyms_fname, constraints, lattice_output):
     """
     Make a lattice that maps
     lemmas and constraints (or priors) to 
@@ -84,7 +84,7 @@ def build_lm(dev_fname, isyms_fname, constraints, lattice_output, refiner_fname)
 
     # add <sigma> state in the <sigma place holder>
     for c, ltr in code.items():
-        if int(ltr)>1 and int(ltr)<50: # (hard coded) symbols of Runssian + 2 more
+        if int(ltr)>1 and int(ltr)<51: # (hard coded) symbols of Runssian + 2 more
             f_big.add_arc(keep, fst.Arc(code[c], code[c], fst.Weight(f_big.weight_type(), 1.0), keep))
 
     f_big.invert()
@@ -124,5 +124,5 @@ def build_refiner(isyms_fname, refiner_fname):
     refiner.write(refiner_fname)
 
 if __name__ == "__main__":
-    build_lm(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
+    build_lm(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
     build_refiner(sys.argv[2], sys.argv[5])
