@@ -1,6 +1,7 @@
 import openfst_python as fst
 import sys
 import math
+import pdb
 
 class analyzer:
     def __init__(self, lattice, refiner, isyms_fname):
@@ -49,12 +50,16 @@ class analyzer:
         sum_value = sum(dist)
         norm_dist = [prob/sum_value for prob in dist]
         relabels = []
-        for label in labels:
+        inf_d = {}
+        #for label in labels:
+        for label, dist in zip(labels, norm_dist):
             delete, insert = label.split("_")
             l = len(delete)
             label = "".join(lemma[:-l])+insert
             relabels.append(label)
-        return str(sorted(zip(relabels, norm_dist), key=lambda x:x[1], reverse=True))
+            inf_d[label]=dist
+        return inf_d
+        #return str(sorted(zip(relabels, norm_dist), key=lambda x:x[1], reverse=True))
 
 if __name__ == "__main__":
     analyser = analyzer(sys.argv[1], sys.argv[2], sys.argv[3])
@@ -63,9 +68,21 @@ if __name__ == "__main__":
     outf = open(outfile,"w")
     for line in open(q_file,"r").readlines():
         line = line.strip()
-        lemma, cns, _ = line.split("\t")
+        lemma, cns, test_inf = line.split("\t")
         lemma = lemma.split()
+        test_inf = test_inf.split()
+        test_inf = "".join(test_inf)
         query = analyser.make_query(cns,lemma)
-        inflections = analyser.generate_inflections(query, lemma)
-        outf.write(cns+" "+"".join(lemma)+" "+inflections+"\n")
+        print(query)
+        try:
+            inflections = analyser.generate_inflections(query, lemma)
+            print(test_inf,inflections)
+            if test_inf in inflections:
+                outf.write("".join(lemma)+"\t"+test_inf+"\t"+cns.replace(";", "")+"\t"+str(inflections[test_inf])+"\n")
+            #outf.write(cns+" "+"".join(lemma)+" "+inflections+"\n")
+            else:
+                outf.write("".join(lemma)+"\t"+test_inf+"\t"+cns.replace(";", "")+"\t"+"0\n")
+        except:
+            outf.write("".join(lemma)+"\t"+test_inf+"\t"+cns.replace(";", "")+"\t"+"0\n")
+            #outf.write(cns+" "+"".join(lemma)+" "+"\n")
     outf.close()
